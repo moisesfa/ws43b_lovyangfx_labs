@@ -3,98 +3,74 @@
 #include "tabs_all.h"
 #include "tab_01.h"
 
-// Cola para comunicar tiempo
-QueueHandle_t timeQueue;
 
-struct TimeData
+// Configuración inicial del RTC interno
+// Año, mes, dia, Hora, Minuto, segundo
+void setManualLocalTime(void)
 {
-    uint8_t ho;
-    uint8_t mi;
-    uint8_t se;
-};
+    struct tm time_local = {0};
 
-void taskManagementTime(void *pvParameters)
-{
+    time_local.tm_year = 2024 - 1900; // Año -1900
+    time_local.tm_mon = 1 - 1;        // Mes 0-11 noviembre es 10 por ejemplo
+    time_local.tm_mday = 1;           // Dia del mes
 
-    static int8_t hour = 0;
-    static int8_t minute = 0;
-    static int8_t second = 0;
-    TimeData timedata;
+    time_local.tm_hour = 0; // Hora en formato 24h
+    time_local.tm_min = 0;  // Minutos
+    time_local.tm_sec = 0;  // Segundos
 
-    while (1)
-    {
-        second++;
-        if (second > 59)
-        {
-            second = 0;
-            minute++;
-            if (minute > 59)
-            {
-                minute = 0;
-                hour++;
-                if (hour > 23)
-                {
-                    hour = 0;
-                }
-            }
-        }
-        // LLenamos la estructura
-        timedata.ho = hour;
-        timedata.mi = minute;
-        timedata.se = second;
+    // Convierte la estructura a tiempo UNIX (segundos desde 1970)
+    time_t t = mktime(&time_local);
 
-        if (xQueueSend(timeQueue, &timedata, pdMS_TO_TICKS(1000)) == pdPASS)
-        {
-            Serial.printf("Mensaje enviado: h:%i m:%i s:%i\n", timedata.ho, timedata.mi, timedata.se);
-        }
-        else
-        {
-            Serial.printf("Error: Cola llena.\n");
-        }
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
+    // Establece el tiempo en el RTC interno
+    struct timeval now = {.tv_sec = t};
+    settimeofday(&now, NULL);
+
+    Serial.println("Manually set time");
 }
 
-void taskShowTimeOnScreen(void *pvParameters)
+void taskShowLocalTime(void *pvParameters)
 {
-    char *mensajeRecibido;
-    TimeData timedata;
+    struct tm time_local;
+    String str_time = "00:00:00";
+    String str_date = "2024-01-01";
+    int8_t lastSecond = -1;
 
     while (true)
     {
-        if (xQueueReceive(timeQueue, &timedata, pdMS_TO_TICKS(1000)) == pdPASS)
+        // Obtener la hora actual
+        if (getLocalTime(&time_local))
         {
-            Serial.printf("Mensaje recibido: h:%i m:%i s:%i\n", timedata.ho, timedata.mi, timedata.se);
-            String hour_time_f = (timedata.ho < 10) ? "0" + String(timedata.ho) : String(timedata.ho);
-            String minute_time_f = (timedata.mi < 10) ? "0" + String(timedata.mi) : String(timedata.mi);
-            String second_time_f = (timedata.se < 10) ? "0" + String(timedata.se) : String(timedata.se);
-            String rec_time_str = String(hour_time_f) + ":" + String(minute_time_f) + ":" + String(second_time_f);
-            if (tab_number == 1)
-                tab_01_view_time(rec_time_str);
+            int currentSecond = time_local.tm_sec;
+
+            // Si cambia el segundo, actualiza la pantalla
+            if (currentSecond != lastSecond)
+            {
+                lastSecond = currentSecond;
+
+                // Actualizar pantalla o realizar acción
+                char buffer_time[32];
+                strftime(buffer_time, sizeof(buffer_time), "%Y-%m-%d %H:%M:%S", &time_local);
+                // Serial.println(buffer_time);
+                String str = (char *)buffer_time;
+                str_time = str.substring(11, 19);
+                str_date = str.substring(0, 10);
+                Serial.printf("%s %s\n", str_time, str_date);
+                if (tab_number == 1) tab_01_view_time(str_time);
+            }
         }
         else
         {
-            Serial.printf("Error: No se recibió ningún mensaje.\n");
+            Serial.println("Error: No se pudo obtener la hora.");
         }
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(200));
     }
 }
-
 
 void init_clock_wifi(void)
 {
 
-    // Crear cola con capacidad para 5 elementos del tamaño de un puntero
-    timeQueue = xQueueCreate(5, sizeof(TimeData));
-    if (timeQueue == NULL)
-    {
-        Serial.println("Error al crear cola");
-        while (true)
-            ; // Detener en caso de error
-    }
+    Serial.println("WiFi not connected");
+    setManualLocalTime();
 
-    xTaskCreate(taskShowTimeOnScreen, "TaskShowTimeOnScreen", 1024 * 2, NULL, 1, NULL);
-    xTaskCreate(taskManagementTime, "TaskManagementTime", 1024 * 2, NULL, 1, NULL);
-
-
+    xTaskCreate(taskShowLocalTime, "taskShowLocalTime", 1024 * 2, NULL, 1, NULL);
 }
