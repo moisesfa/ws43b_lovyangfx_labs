@@ -12,7 +12,7 @@ extern LGFX tft;
 
 void tab_02_view(void) 
 {
-    screen_number = 2;
+    tab_number = 2;
     tft.fillScreen(0x003030);
     tft.fillRect(0, 0, 800, 70, 0x000028);
     tft.setTextColor(TFT_WHITE);    

@@ -7,4 +7,5 @@
 #define HEIGHT_SPRT_INFO_TIME   140 
 
 void tab_01_view(void);
+void tab_01_view_time(String mensajeRecibido);
  

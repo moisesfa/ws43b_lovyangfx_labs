@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "expander.h"
 #include "config_lovyan_gfx.h"
+#include "clock_wifi.h"
 
 bool GFXinitOK = false;
 
@@ -14,6 +15,7 @@ void setup() {
   delay(200);
   ExpanderInit();
   init_lovyangfx();
+  init_clock_wifi();
   Serial.println("Lgfx initialised");
   
 }

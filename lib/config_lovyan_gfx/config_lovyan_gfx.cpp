@@ -118,12 +118,12 @@ void taskManagementGesture(void *pvParameters)
                 Serial.println("Gesture: DOWN");
                 break;
             case LEFT:
-                if (screen_number != 2)
+                if (tab_number != 2)
                     tab_02_view();
                 Serial.println("Gesture: LEFT");
                 break;
             case RIGHT:
-                if (screen_number != 1)
+                if (tab_number != 1)
                     tab_01_view();
                 Serial.println("Gesture: RIGHT");
                 break;

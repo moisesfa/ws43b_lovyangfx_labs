@@ -11,7 +11,12 @@ Casi toda la información la encuentro en este gran canal [Volos Projects](https
 - [x] Fuentes personalizadas
 - [x] Usar FreeRTOS 
 - [x] Gestos en la pantalla táctil
- 
+
+## Reloj WiFi
+- [ ] Configurar WiFi con SmartConfig 
+- [ ] Usar el RTC interno del ESP32
+- [ ] Sincronizar el reloj periodicamente 
+
 ## Resultado
 
 <div style="text-align: center;">

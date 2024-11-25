@@ -5,7 +5,7 @@
 extern LGFX tft;
 static LGFX_Sprite sprite_sel_screen(&tft);
 
-uint8_t screen_number = 1;
+uint8_t tab_number = 1;
 
 void draw_sprite_sel_screen(uint8_t screen)
 {
