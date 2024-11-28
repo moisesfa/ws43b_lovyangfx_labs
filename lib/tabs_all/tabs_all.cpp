@@ -7,9 +7,12 @@ static LGFX_Sprite sprite_sel_screen(&tft);
 
 uint8_t tab_number = 1;
 
-void draw_sprite_sel_screen(uint8_t screen)
+void draw_sprite_sel_tab(uint8_t screen)
 {
+    sprite_sel_screen.setPsram(true);
     sprite_sel_screen.createSprite(WIDTH_SPRT_SEL_SCREEN, HEIGHT_SPRT_SEL_SCREEN);
+    Serial.println("Sprite Creado");
+    Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
 
     sprite_sel_screen.fillSprite(0x003030);
     //sprite_sel_screen.fillSprite(TFT_TRANSPARENT);
@@ -31,4 +34,8 @@ void draw_sprite_sel_screen(uint8_t screen)
     }
  
     sprite_sel_screen.pushSprite(350,420);
+    sprite_sel_screen.deleteSprite();
+    Serial.println("Sprite Eliminado");
+    Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
+
 }

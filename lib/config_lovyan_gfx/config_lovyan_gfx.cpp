@@ -46,7 +46,7 @@ void taskReadTouchAndDetectGesture(void *pvParameters)
         {
             touchData.x = touch.x;
             touchData.y = touch.y;
-            Serial.printf("X:%d Y:%d\n", touch.x, touch.y);
+            //Serial.printf("X:%d Y:%d\n", touch.x, touch.y);
 
             // Detectar gestos si hay una posición previa válida
             if (prevX != -1 && prevY != -1)
@@ -135,15 +135,24 @@ void taskManagementGesture(void *pvParameters)
     }
 }
 
-
-
 void init_lovyangfx()
 {
     Serial.println("Lgfx init...");
 
+    if (psramFound())
+    {
+        Serial.println("PSRAM detectada y habilitada");
+        Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
+        Serial.println("Memoria libre en SRAM: " + String(ESP.getFreeHeap()) + " bytes");
+    }
+    else
+    {
+        Serial.println("PSRAM no detectada");
+        Serial.println("Memoria libre en SRAM: " + String(ESP.getFreeHeap()) + " bytes");
+    }
+
     tft.init();
-    // TODO: Crear una tarea que lea constantemente el touch
-    //  Crear tarea FreeRTOS para leer el touch
+
     //  tft.setRotation(0);
     tab_01_view();
 
@@ -152,11 +161,9 @@ void init_lovyangfx()
     if (gestureQueue == NULL)
     {
         Serial.println("Error al crear cola");
-        // tft.println("Error al crear cola");
         while (true)
             ; // Detener en caso de error
     }
-
 
     // Crear tareas FreeRTOS
     xTaskCreate(taskReadTouchAndDetectGesture, "TaskReadTouchAndDetectGesture", 1024 * 2, NULL, 1, NULL);

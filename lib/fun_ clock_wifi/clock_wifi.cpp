@@ -72,5 +72,5 @@ void init_clock_wifi(void)
     Serial.println("WiFi not connected");
     setManualLocalTime();
 
-    xTaskCreate(taskShowLocalTime, "taskShowLocalTime", 1024 * 2, NULL, 1, NULL);
+    xTaskCreate(taskShowLocalTime, "taskShowLocalTime", 1024 * 3, NULL, 1, NULL);
 }

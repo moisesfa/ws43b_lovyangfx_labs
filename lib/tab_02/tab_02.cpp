@@ -25,5 +25,5 @@ void tab_02_view(void)
     //tft.setFont(&fonts::DejaVu72);
     tft.setTextDatum(CC_DATUM);
     tft.drawString("TAB-02",400,300);
-    draw_sprite_sel_screen(2);
+    draw_sprite_sel_tab(2);
 }
