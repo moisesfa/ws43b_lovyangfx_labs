@@ -118,12 +118,12 @@ void taskManagementGesture(void *pvParameters)
                 Serial.println("Gesture: DOWN");
                 break;
             case LEFT:
-                if (tab_number != 2)
+                if (tab_number != 2 && tab_number != 0)
                     tab_02_view();
                 Serial.println("Gesture: LEFT");
                 break;
             case RIGHT:
-                if (tab_number != 1)
+                if (tab_number != 1 && tab_number != 0)
                     tab_01_view();
                 Serial.println("Gesture: RIGHT");
                 break;
@@ -154,8 +154,7 @@ void init_lovyangfx()
     tft.init();
 
     //  tft.setRotation(0);
-    tab_01_view();
-
+    
     // Crear cola para los gestos
     gestureQueue = xQueueCreate(5, sizeof(Gesture));
     if (gestureQueue == NULL)

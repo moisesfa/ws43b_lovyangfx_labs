@@ -1,8 +1,11 @@
 #include <Arduino.h>
 #include "clock_wifi.h"
 #include "tabs_all.h"
+#include "tab_00.h"
 #include "tab_01.h"
 
+#define MODE_WIFI 1
+bool is_wifi_connected = false;
 
 // Configuración inicial del RTC interno
 // Año, mes, dia, Hora, Minuto, segundo
@@ -69,8 +72,19 @@ void taskShowLocalTime(void *pvParameters)
 void init_clock_wifi(void)
 {
 
+#if MODE_WIFI 
+    
+    while(!is_wifi_connected)
+    {
+        is_wifi_connected = tab_00_view();
+    }
+    tab_01_view();
+
+#else    
     Serial.println("WiFi not connected");
-    setManualLocalTime();
+    setManualLocalTime();    
+    tab_01_view();
+#endif
 
     xTaskCreate(taskShowLocalTime, "taskShowLocalTime", 1024 * 3, NULL, 1, NULL);
 }
