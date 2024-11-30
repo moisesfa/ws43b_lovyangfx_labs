@@ -13,7 +13,8 @@ extern LGFX tft;
 void tab_02_view(void) 
 {
     tab_number = 2;
-    tft.fillScreen(0x003030);
+    //tft.fillScreen(0x003030);
+    degraded_background();
     tft.fillRect(0, 0, 800, 70, 0x000028);
     tft.setTextColor(TFT_WHITE);    
     tft.setFont(&fonts::DejaVu40);

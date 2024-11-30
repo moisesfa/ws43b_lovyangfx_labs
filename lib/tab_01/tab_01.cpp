@@ -24,7 +24,8 @@ void tab_01_view(void)
     Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
     Serial.println("Memoria libre en SRAM: " +  String(ESP.getFreeHeap()) + " bytes");
 
-    tft.fillScreen(0x003030);
+    //tft.fillScreen(0x003030);
+    degraded_background();
     tft.fillRect(0, 0, 800, 70, 0x000028);
     tft.setTextColor(TFT_GOLD);
     tft.setFont(&fonts::DejaVu40);
