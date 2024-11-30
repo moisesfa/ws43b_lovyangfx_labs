@@ -7,7 +7,6 @@
 #include "WiFi.h"
 #include <esp_wifi.h>
 
-
 const char *title_00 = "CONEXION WiFi";
 
 extern LGFX tft;
@@ -21,6 +20,41 @@ extern LGFX tft;
 #define NTP_SERVER2 "time.nist.gov"
 //{"Europe/Madrid", "CET-1CEST,M3.5.0,M10.5.0/3"},
 #define TIMEZONE "CET-1CEST,M3.5.0,M10.5.0/3"
+
+void syncTime();
+
+void taskWiFiNTP(void *pvParameters)
+{
+  while (true)
+  {
+    if (WiFi.status() != WL_CONNECTED)
+    {
+      Serial.println("WiFi not connected. Trying to reconnect");
+      WiFi.reconnect();
+      vTaskDelay(100 / portTICK_PERIOD_MS);
+      if (WiFi.status() == WL_CONNECTED)
+      {
+        syncTime(); // Sincronizar el tiempo
+      }
+      else
+      {
+        Serial.println("Could not connect to wifi");
+      }
+    }
+    else
+    {
+      // Si ya esta concetado sincronizar periodicamente
+      Serial.println("WiFi connected");
+      static unsigned long lastSync = 0;
+      if (millis() - lastSync > 6*60*60*1000){ // cada 6 horas 
+        syncTime(); // Sincronizar el tiempo
+        lastSync = millis();
+      }
+    }
+    // Revisar el estado cada minuto de momento
+    vTaskDelay(60*1000 / portTICK_PERIOD_MS);
+  }
+}
 
 void wifiTest()
 {
@@ -183,7 +217,7 @@ void networkReset()
 bool tab_00_view(void)
 {
     tab_number = 0;
-
+    
     tft.fillScreen(0x003030);
     tft.fillRect(0, 0, 800, 70, 0x000028);
     tft.setTextColor(TFT_GOLD);
@@ -196,6 +230,7 @@ bool tab_00_view(void)
     //networkReset();
     wifiTest();
     syncTime();
+    xTaskCreate(taskWiFiNTP, "taskWiFiNTP", 1024*2, NULL,1,NULL);
     return true;
     
 }
