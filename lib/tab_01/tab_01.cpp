@@ -37,14 +37,14 @@ void tab_01_view(void)
     tft.setFont(&AlibabaSans_Bold80pt7b);
     // tft.setFont(&fonts::DejaVu72);
     tft.setTextDatum(CC_DATUM);
-    tft.drawString("TAB-01", 400, 300);
+    //tft.drawString("TAB-01", 400, 300);
     draw_sprite_sel_tab(1);
 }
 
 void tab_01_view_time(String mensajeRecibido)
 {
 
-    sprite_info_time.fillSprite(0x003030);
+    sprite_info_time.fillSprite(TFT_TRANSPARENT);
     // sprite_info_time.fillSprite(TFT_RED);
     // sprite_info_time.fillRoundRect(0,0,WIDTH_SPRT_INFO_TIME, HEIGHT_SPRT_INFO_TIME, 40,TFT_DARKGREEN);
     sprite_info_time.fillRoundRect(10, 0, 200, 140,20, 0x000028);
@@ -55,5 +55,5 @@ void tab_01_view_time(String mensajeRecibido)
     sprite_info_time.setTextColor(TFT_GOLD);
     sprite_info_time.setTextDatum(CC_DATUM);
     sprite_info_time.drawString(mensajeRecibido, WIDTH_SPRT_INFO_TIME / 2, HEIGHT_SPRT_INFO_TIME / 2 + 8);
-    sprite_info_time.pushSprite(40, 220);
+    sprite_info_time.pushSprite(40, 220,TFT_TRANSPARENT);
 }

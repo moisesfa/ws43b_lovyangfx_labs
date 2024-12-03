@@ -3,6 +3,7 @@
 
 #include "tab_00.h"
 #include "tabs_all.h"
+#include "wifi_img96.h"
 
 #include "WiFi.h"
 #include <esp_wifi.h>
@@ -10,6 +11,7 @@
 const char *title_00 = "CONEXION WiFi";
 
 extern LGFX tft;
+static LGFX_Sprite arrow_sprite(&tft);
 
 #define WIFI_SSID "wifi_ssid"
 #define WIFI_PASSWORD "wifi_password"
@@ -117,7 +119,9 @@ void wifiTest()
   text += "\n";
   Serial.print((char *)(current_conf.sta.ssid));
 
-  tft.drawRoundRect(50, 210, 680, 180, 20, TFT_GOLD);
+  //tft.drawRoundRect(50, 210, 680, 180, 20, TFT_GOLD);
+  tft.fillRoundRect(100, 210, 600, 180, 20, 0x000028);
+  
   tft.drawString("CONECTANDO A " + String((char *)(current_conf.sta.ssid)), 400, 250);
   tft.drawString("..............", 400, 300);
 
@@ -219,7 +223,21 @@ bool tab_00_view(void)
 {
   tab_number = 0;
 
+  // https://youtu.be/U4jOFLFNZBI?feature=shared
   degraded_background();
+  //tft.fillScreen(TFT_PURPLE);
+  tft.setSwapBytes(true);  
+  arrow_sprite.setPsram(true);
+  arrow_sprite.createSprite(96,96);
+  arrow_sprite.setSwapBytes(true);
+  arrow_sprite.pushImage(0,0,96,96,wifi_img96);
+  //arrow_sprite.pushSprite(80,100);
+  arrow_sprite.pushSprite(80,100,TFT_BLACK);
+  arrow_sprite.pushSprite(626,100,TFT_BLACK);
+
+  //arrowSprite.pushToSprite(&background,x,40,TFT_BLACK); 
+  delay(5000);
+
   tft.fillRect(0, 0, 800, 70, 0x000028);
   tft.setTextColor(TFT_GOLD);
   tft.setFont(&fonts::DejaVu40);
