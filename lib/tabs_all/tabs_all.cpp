@@ -1,9 +1,14 @@
 #include "tabs_all.h"
 #include <LovyanGFX.hpp>
 #include "config_lovyan_gfx.h"
+//#include "wifi_img96.h"
+#include "wifi_img64.h"
+
 
 extern LGFX tft;
 static LGFX_Sprite sprite_sel_screen(&tft);
+static LGFX_Sprite arrow_sprite(&tft);
+
 
 uint8_t tab_number = 1;
 
@@ -37,6 +42,17 @@ void draw_sprite_sel_tab(uint8_t screen)
     sprite_sel_screen.deleteSprite();
     Serial.println("Sprite Eliminado");
     Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
+
+}
+
+void draw_sprite_symbol_wifi()
+{
+  arrow_sprite.setSwapBytes(true);  
+  arrow_sprite.setPsram(true);
+  arrow_sprite.createSprite(64,64);
+  arrow_sprite.setSwapBytes(true);
+  arrow_sprite.pushImage(0,0,64,64,wifi_img64);
+  arrow_sprite.pushSprite(500,3,TFT_BLACK);
 
 }
 

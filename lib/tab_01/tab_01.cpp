@@ -6,7 +6,7 @@
 // Dirección para convrtir fuentes https://rop.nl/truetype2gfx/
 #include "myfonts/AlibabaSans_Bold80pt7b.h"
 
-const char *title_01 = "RELOJ WiFi";
+const char *title_01 = "RELOJ";
 
 extern LGFX tft;
 //static LGFX_Sprite sprite_info_wifi(&tft);
@@ -32,6 +32,7 @@ void tab_01_view(void)
     // tft.setTextSize(4);
     tft.setTextDatum(CC_DATUM);
     tft.drawString(title_01, 400, 40);
+    draw_sprite_symbol_wifi();
 
     // tft.setTextSize(1);
     tft.setFont(&AlibabaSans_Bold80pt7b);

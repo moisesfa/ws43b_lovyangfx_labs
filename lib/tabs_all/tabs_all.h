@@ -7,5 +7,6 @@
 extern uint8_t tab_number;
 
 void draw_sprite_sel_tab(uint8_t screen);
+void draw_sprite_symbol_wifi(void);
 void degraded_background(void);
 

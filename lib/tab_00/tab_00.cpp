@@ -3,15 +3,13 @@
 
 #include "tab_00.h"
 #include "tabs_all.h"
-#include "wifi_img96.h"
 
 #include "WiFi.h"
 #include <esp_wifi.h>
 
-const char *title_00 = "CONEXION WiFi";
+const char *title_00 = "CONEXION";
 
 extern LGFX tft;
-static LGFX_Sprite arrow_sprite(&tft);
 
 #define WIFI_SSID "wifi_ssid"
 #define WIFI_PASSWORD "wifi_password"
@@ -146,8 +144,8 @@ void wifiTest()
       text += "\nPlease use EspTouch Apps to connect to the distribution network";
       Serial.println(text);
 
-      tft.fillRoundRect(50, 210, 680, 180, 20, 0x003030);
-      tft.drawRoundRect(50, 210, 680, 180, 20, TFT_GOLD);
+      tft.fillRoundRect(50, 210, 680, 180, 20, 0x000028);
+      //tft.drawRoundRect(50, 210, 680, 180, 20, TFT_GOLD);
       tft.drawString("NO SE HA PODIDO CONECTAR", 400, 250);
       tft.drawString("ESPERANDO SMARTCONFIG", 400, 300);
       tft.drawString("USE LA APP - ESPTOUCH - PARA CONECTARSE ", 400, 350);
@@ -226,25 +224,19 @@ bool tab_00_view(void)
   // https://youtu.be/U4jOFLFNZBI?feature=shared
   degraded_background();
   //tft.fillScreen(TFT_PURPLE);
-  tft.setSwapBytes(true);  
-  arrow_sprite.setPsram(true);
-  arrow_sprite.createSprite(96,96);
-  arrow_sprite.setSwapBytes(true);
-  arrow_sprite.pushImage(0,0,96,96,wifi_img96);
   //arrow_sprite.pushSprite(80,100);
-  arrow_sprite.pushSprite(80,100,TFT_BLACK);
-  arrow_sprite.pushSprite(626,100,TFT_BLACK);
-
+  
   //arrowSprite.pushToSprite(&background,x,40,TFT_BLACK); 
-  delay(5000);
+  //delay(5000);
 
   tft.fillRect(0, 0, 800, 70, 0x000028);
   tft.setTextColor(TFT_GOLD);
   tft.setFont(&fonts::DejaVu40);
   // tft.setTextSize(4);
   tft.setTextDatum(CC_DATUM);
-  tft.drawString(title_00, 400, 40);
-
+  tft.drawString(title_00, 360, 40);
+  draw_sprite_symbol_wifi();
+  
   Serial.println("Try to connect to wifi");
   // networkReset();
   wifiTest();
