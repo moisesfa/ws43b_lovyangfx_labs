@@ -7,7 +7,7 @@
 
 extern LGFX tft;
 static LGFX_Sprite sprite_sel_screen(&tft);
-static LGFX_Sprite arrow_sprite(&tft);
+static LGFX_Sprite sprite_wifi(&tft);
 
 
 uint8_t tab_number = 1;
@@ -47,13 +47,13 @@ void draw_sprite_sel_tab(uint8_t screen)
 
 void draw_sprite_symbol_wifi()
 {
-  arrow_sprite.setSwapBytes(true);  
-  arrow_sprite.setPsram(true);
-  arrow_sprite.createSprite(64,64);
-  arrow_sprite.setSwapBytes(true);
-  arrow_sprite.pushImage(0,0,64,64,wifi_img64);
-  arrow_sprite.pushSprite(500,3,TFT_BLACK);
-
+  sprite_wifi.setSwapBytes(true);  
+  sprite_wifi.setPsram(true);
+  sprite_wifi.createSprite(64,64);
+  sprite_wifi.setSwapBytes(true);
+  sprite_wifi.pushImage(0,0,64,64,wifi_img64);
+  sprite_wifi.pushSprite(500,3,TFT_BLACK);
+  sprite_wifi.deleteSprite();
 }
 
 // Función para descomponer un color RGB565 a sus componentes

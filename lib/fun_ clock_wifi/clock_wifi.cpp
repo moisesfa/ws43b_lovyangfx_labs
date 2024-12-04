@@ -58,7 +58,10 @@ void taskShowLocalTime(void *pvParameters)
                 str_time = str.substring(11, 19);
                 str_date = str.substring(0, 10);
                 Serial.printf("%s %s\n", str_time, str_date);
-                if (tab_number == 1) tab_01_view_time(str_time);
+                if (tab_number == 1) {
+                    tab_01_view_date(str_date);
+                    tab_01_view_time(str_time);
+                }
             }
         }
         else

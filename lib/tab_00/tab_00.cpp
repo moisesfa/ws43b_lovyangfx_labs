@@ -118,10 +118,10 @@ void wifiTest()
   Serial.print((char *)(current_conf.sta.ssid));
 
   //tft.drawRoundRect(50, 210, 680, 180, 20, TFT_GOLD);
-  tft.fillRoundRect(100, 210, 600, 180, 20, 0x000028);
+  tft.fillRoundRect(100, 260, 600, 180, 20, 0x000028);
   
-  tft.drawString("CONECTANDO A " + String((char *)(current_conf.sta.ssid)), 400, 250);
-  tft.drawString("..............", 400, 300);
+  tft.drawString("CONECTANDO A " + String((char *)(current_conf.sta.ssid)), 400, 300);
+  tft.drawString("..............", 400, 350);
 
   // Configurar el WiFi en modo light sleep
   // esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
@@ -144,11 +144,11 @@ void wifiTest()
       text += "\nPlease use EspTouch Apps to connect to the distribution network";
       Serial.println(text);
 
-      tft.fillRoundRect(50, 210, 680, 180, 20, 0x000028);
+      tft.fillRoundRect(50, 260, 680, 180, 20, 0x000028);
       //tft.drawRoundRect(50, 210, 680, 180, 20, TFT_GOLD);
-      tft.drawString("NO SE HA PODIDO CONECTAR", 400, 250);
-      tft.drawString("ESPERANDO SMARTCONFIG", 400, 300);
-      tft.drawString("USE LA APP - ESPTOUCH - PARA CONECTARSE ", 400, 350);
+      tft.drawString("NO SE HA PODIDO CONECTAR", 400, 300);
+      tft.drawString("ESPERANDO SMARTCONFIG", 400, 350);
+      tft.drawString("USE LA APP - ESPTOUCH - PARA CONECTARSE ", 400, 400);
 
       WiFi.beginSmartConfig();
       while (1)
@@ -183,7 +183,7 @@ void wifiTest()
     text += millis() - last_tick;
     text += " ms\n";
     Serial.println(text);
-    tft.drawString("CONECTADO EN " + String(millis() - last_tick) + " ms", 400, 350);
+    tft.drawString("CONECTADO EN " + String(millis() - last_tick) + " ms", 400, 400);
     // is_wifi_connect = true;
   }
   delay(5000);
@@ -224,9 +224,7 @@ bool tab_00_view(void)
   // https://youtu.be/U4jOFLFNZBI?feature=shared
   degraded_background();
   //tft.fillScreen(TFT_PURPLE);
-  //arrow_sprite.pushSprite(80,100);
   
-  //arrowSprite.pushToSprite(&background,x,40,TFT_BLACK); 
   //delay(5000);
 
   tft.fillRect(0, 0, 800, 70, 0x000028);
