@@ -12,7 +12,7 @@ Casi toda la información la encuentro en este gran canal [Volos Projects](https
 - [x] Usar FreeRTOS 
 - [x] Gestos en la pantalla táctil
 
-## Tab_00 Configurar conexión
+## Tab_00 Configurar Conexión
 - [x] Configurar la conexión WiFi con SmartConfig 
 
 ## Tab_01 Reloj WiFi
@@ -23,6 +23,7 @@ Casi toda la información la encuentro en este gran canal [Volos Projects](https
 Añadiré datos meteorológicos siguiendo este tutorial de [Randomnerd](https://randomnerdtutorials.com/esp32-cyd-lvgl-weather-station/)
 
 - [ ] Obtener la previsión meteorológica 
+- [ ] Mostrar los datos obtenidos en Tab_02 
 - [ ] Sincronizar la previsión periodicamente 
 
 ## Resultado Reloj WiFi y Conexión

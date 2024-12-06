@@ -26,9 +26,9 @@ void tab_01_view(void)
     sprite_info_date.setPsram(true);
     sprite_info_date.createSprite(WIDTH_SPRT_INFO_DATE, HEIGHT_SPRT_INFO_DATE);
 
-    Serial.println("Sprite Creado");
-    Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
-    Serial.println("Memoria libre en SRAM: " +  String(ESP.getFreeHeap()) + " bytes");
+    // Serial.println("Sprite Creado");
+    // Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
+    // Serial.println("Memoria libre en SRAM: " +  String(ESP.getFreeHeap()) + " bytes");
 
     //tft.fillScreen(0x003030);
     degraded_background();

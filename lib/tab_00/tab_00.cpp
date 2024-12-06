@@ -5,7 +5,11 @@
 #include "tabs_all.h"
 
 #include "WiFi.h"
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
+
 #include <esp_wifi.h>
+#include "myfonts/AlibabaSans_Bold20pt7b.h"
 
 const char *title_00 = "CONEXION";
 
@@ -21,11 +25,45 @@ extern LGFX tft;
 //{"Europe/Madrid", "CET-1CEST,M3.5.0,M10.5.0/3"},
 #define TIMEZONE "CET-1CEST,M3.5.0,M10.5.0/3"
 
-#include "myfonts/AlibabaSans_Bold20pt7b.h"
+/*
+Las Coordenadas de Ponferrada Latitud y Longitud son las siguientes:
+* Latitud: 42.5025289
+* Longitud: -6.5719487
+*/
 
-void syncTime();
+// Replace with the latitude and longitude to where you want to get the weather
+String latitude = "42.5025289";
+String longitude = "-6.5719487";
+// Enter your location
+String location = "Ponferrada";
+// Type the timezone you want to get the time for
+String timezone = "Europe/Madrid";
 
-void taskWiFiNTP(void *pvParameters)
+// Store date and time
+String datetime_str;
+String current_date_str;
+String last_weather_update_str;
+
+String temperature_str;
+String humidity_str;
+String is_day_str;
+String weather_code_str;
+
+//String weather_description;
+
+// SET VARIABLE TO 0 FOR TEMPERATURE IN FAHRENHEIT DEGREES
+#define TEMP_CELSIUS 1
+
+#if TEMP_CELSIUS
+  String temperature_unit = "";
+#else
+  String temperature_unit = "&temperature_unit=fahrenheit";
+#endif
+
+void get_sync_time();
+void get_weather_data();
+
+void task_WiFi_NTP(void *pvParameters)
 {
   while (true)
   {
@@ -36,7 +74,7 @@ void taskWiFiNTP(void *pvParameters)
       vTaskDelay(100 / portTICK_PERIOD_MS);
       if (WiFi.status() == WL_CONNECTED)
       {
-        syncTime(); // Sincronizar el tiempo
+        get_sync_time(); // Sincronizar el tiempo
       }
       else
       {
@@ -50,7 +88,7 @@ void taskWiFiNTP(void *pvParameters)
       static unsigned long lastSync = 0;
       if (millis() - lastSync > 6 * 60 * 60 * 1000)
       {             // cada 6 horas
-        syncTime(); // Sincronizar el tiempo
+        get_sync_time(); // Sincronizar el tiempo
         lastSync = millis();
       }
     }
@@ -59,7 +97,7 @@ void taskWiFiNTP(void *pvParameters)
   }
 }
 
-void wifiTest()
+void wifi_test()
 {
   String text;
   WiFi.mode(WIFI_STA);
@@ -191,7 +229,7 @@ void wifiTest()
   delay(5000);
 }
 
-void syncTime()
+void get_sync_time()
 {
   configTzTime(TIMEZONE, NTP_SERVER1, NTP_SERVER2);
   Serial.println("Waiting for NTP sync ...");
@@ -206,7 +244,74 @@ void syncTime()
   }
 }
 
-void networkReset()
+void get_weather_data() {
+// Obternr los datos meteorológicos de la API de open-meteo.com
+// Example response
+/* 
+{"latitude":42.5,"longitude":-6.5625,"generationtime_ms":0.062943,"utc_offset_seconds":3600,"timezone":"Europe/Madrid","timezone_abbreviation":"CET","elevation":677,"current_units":{"time":"iso8601","interval":"seconds","temperature_2m":"°C","relative_humidity_2m":"%","is_day":"","precipitation":"mm","rain":"mm","weather_code":"wmo code"},"current":{"time":"2024-12-06T17:00","interval":900,"temperature_2m":14.4,"relative_humidity_2m":78,"is_day":1,"precipitation":0,"rain":0,"weather_code":2}}
+*/
+
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    // Construct the API endpoint
+    String url = String("http://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + "&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,weather_code" + temperature_unit + "&timezone=" + timezone + "&forecast_days=1");
+    http.begin(url);
+    int httpCode = http.GET(); // Make the GET request
+
+    if (httpCode > 0) {
+      // Check for the response
+      if (httpCode == HTTP_CODE_OK) {
+        String payload = http.getString();
+        //Serial.println("Request information:");
+        //Serial.println(payload);
+        // Parse the JSON to extract the time
+        JsonDocument doc;
+        DeserializationError error = deserializeJson(doc, payload);
+        if (!error) {
+          String output;
+          serializeJson(doc, output);
+          Serial.println(output);
+
+          const char* datetime = doc["current"]["time"];
+          String temperature = doc["current"]["temperature_2m"];
+          String humidity = doc["current"]["relative_humidity_2m"];
+          String is_day = doc["current"]["is_day"];
+          String weather_code = doc["current"]["weather_code"];
+
+          datetime_str = String(datetime);
+          temperature_str = String(temperature);
+          humidity_str = String(humidity);
+          is_day_str = String(is_day);
+          weather_code_str = String(weather_code);
+          
+          // Split the datetime into date and time
+          int splitIndex = datetime_str.indexOf('T');
+          current_date_str = datetime_str.substring(0, splitIndex);
+          last_weather_update_str = datetime_str.substring(splitIndex + 1, splitIndex + 9); // Extract time portion
+          Serial.print("Get weater :\n");
+          Serial.printf("datetime_str: %s\n", datetime_str.c_str());
+          Serial.printf("current_date_str: %s\n", current_date_str.c_str());
+          Serial.printf("last_weather_update: %s\n", last_weather_update_str.c_str());
+          Serial.printf("temperature_str: %s\n", temperature_str.c_str());
+          Serial.printf("humidity_str: %s\n", humidity_str.c_str());
+          Serial.printf("is_day_str: %s\n", is_day_str.c_str());
+          Serial.printf("weather_code_str: %s\n", weather_code_str.c_str());
+
+        } else {
+          Serial.print("deserializeJson() failed: ");
+          Serial.println(error.c_str());
+        }
+      }
+    } else {
+      Serial.printf("GET request failed, error: %s\n", http.errorToString(httpCode).c_str());
+    }
+    http.end(); // Close connection
+  } else {
+    Serial.println("Not connected to Wi-Fi");
+  }
+}
+
+void network_reset()
 {
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
@@ -239,9 +344,10 @@ bool tab_00_view(void)
   tft.setFont(&fonts::DejaVu40);
   
   Serial.println("Try to connect to wifi");
-  // networkReset();
-  wifiTest();
-  syncTime();
-  xTaskCreate(taskWiFiNTP, "taskWiFiNTP", 1024 * 2, NULL, 1, NULL);
+  // network_reset();
+  wifi_test();
+  get_sync_time();
+  get_weather_data();
+  xTaskCreate(task_WiFi_NTP, "taskWiFiNTP", 1024 * 2, NULL, 1, NULL);
   return true;
 }

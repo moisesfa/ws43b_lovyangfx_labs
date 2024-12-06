@@ -16,8 +16,8 @@ void draw_sprite_sel_tab(uint8_t screen)
 {
     sprite_sel_screen.setPsram(true);
     sprite_sel_screen.createSprite(WIDTH_SPRT_SEL_SCREEN, HEIGHT_SPRT_SEL_SCREEN);
-    Serial.println("Sprite Creado");
-    Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
+    // Serial.println("Sprite Creado");
+    // Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
 
     sprite_sel_screen.fillSprite(0x000028);
     //sprite_sel_screen.fillSprite(TFT_TRANSPARENT);
@@ -40,8 +40,8 @@ void draw_sprite_sel_tab(uint8_t screen)
  
     sprite_sel_screen.pushSprite(350,430);
     sprite_sel_screen.deleteSprite();
-    Serial.println("Sprite Eliminado");
-    Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
+    // Serial.println("Sprite Eliminado");
+    // Serial.println("Memoria libre en PSRAM: " + String(ESP.getFreePsram()) + " bytes");
 
 }
 
