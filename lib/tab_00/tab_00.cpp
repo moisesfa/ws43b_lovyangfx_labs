@@ -21,6 +21,8 @@ extern LGFX tft;
 //{"Europe/Madrid", "CET-1CEST,M3.5.0,M10.5.0/3"},
 #define TIMEZONE "CET-1CEST,M3.5.0,M10.5.0/3"
 
+#include "myfonts/AlibabaSans_Bold20pt7b.h"
+
 void syncTime();
 
 void taskWiFiNTP(void *pvParameters)
@@ -229,11 +231,12 @@ bool tab_00_view(void)
 
   tft.fillRect(0, 0, 800, 70, 0x000028);
   tft.setTextColor(TFT_GOLD);
-  tft.setFont(&fonts::DejaVu40);
+  tft.setFont(&AlibabaSans_Bold20pt7b);
   // tft.setTextSize(4);
   tft.setTextDatum(CC_DATUM);
   tft.drawString(title_00, 360, 40);
   draw_sprite_symbol_wifi();
+  tft.setFont(&fonts::DejaVu40);
   
   Serial.println("Try to connect to wifi");
   // networkReset();

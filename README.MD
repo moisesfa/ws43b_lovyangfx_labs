@@ -12,15 +12,27 @@ Casi toda la información la encuentro en este gran canal [Volos Projects](https
 - [x] Usar FreeRTOS 
 - [x] Gestos en la pantalla táctil
 
-## Reloj WiFi
-- [ ] Configurar WiFi con SmartConfig 
-- [ ] Usar el RTC interno del ESP32
-- [ ] Sincronizar el reloj periodicamente 
+## Tab_00 Configurar conexión
+- [x] Configurar la conexión WiFi con SmartConfig 
 
-## Resultado
+## Tab_01 Reloj WiFi
+- [x] Usar el RTC interno del ESP32
+- [x] Sincronizar el reloj periodicamente 
+
+## Tab_02 Estación Meteorológica
+Añadiré datos meteorológicos siguiendo este tutorial de [Randomnerd](https://randomnerdtutorials.com/esp32-cyd-lvgl-weather-station/)
+
+- [ ] Obtener la previsión meteorológica 
+- [ ] Sincronizar la previsión periodicamente 
+
+## Resultado Reloj WiFi y Conexión
 
 <div style="text-align: center;">
 
-![](docs/img/result.jpg)
+<!-- <img src="docs/img/result.jpg" alt="Descripción de la imagen" width="300" height="200"> -->
+<!-- ![](docs/img/result.jpg) -->
+
+| ![Imagen 1](docs/img/result_1.jpg) | ![Imagen 2](docs/img/result_2.jpg) | ![Imagen 3](docs/img/result_3.jpg) |
+|---------------------------------|---------------------------------|---------------------------------|
 
 </div>

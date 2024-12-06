@@ -10,6 +10,12 @@ const char* title_02 = "Title TAB-02";
 
 extern LGFX tft;
 
+/*
+Las Coordenadas de Ponferrada Latitud y Longitud son las siguientes:
+* Latitud: 42.5025289
+* Longitud: -6.5719487
+*/
+
 void tab_02_view(void) 
 {
     tab_number = 2;

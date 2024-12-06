@@ -7,8 +7,9 @@
 #include "myfonts/AlibabaSans_Bold80pt7b.h"
 //#include "myfonts/AlibabaSans_Bold60pt7b.h"
 #include "myfonts/AlibabaSans_Bold40pt7b.h"
+#include "myfonts/AlibabaSans_Bold20pt7b.h"
 
-const char *title_01 = "RELOJ";
+const char *title_01 = "RELOJ WiFi";
 
 extern LGFX tft;
 static LGFX_Sprite sprite_info_time(&tft);
@@ -33,7 +34,8 @@ void tab_01_view(void)
     degraded_background();
     tft.fillRect(0, 0, 800, 70, 0x000028);
     tft.setTextColor(TFT_GOLD);
-    tft.setFont(&fonts::DejaVu40);
+    //tft.setFont(&fonts::DejaVu40);
+    tft.setFont(&AlibabaSans_Bold20pt7b);
     // tft.setTextSize(4);
     tft.setTextDatum(CC_DATUM);
     tft.drawString(title_01, 400, 40);
