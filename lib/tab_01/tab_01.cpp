@@ -36,15 +36,9 @@ void tab_01_view(void)
     tft.setTextColor(TFT_GOLD);
     //tft.setFont(&fonts::DejaVu40);
     tft.setFont(&AlibabaSans_Bold20pt7b);
-    // tft.setTextSize(4);
     tft.setTextDatum(CC_DATUM);
     tft.drawString(title_01, 400, 40);
 
-    // tft.setTextSize(1);
-    tft.setFont(&AlibabaSans_Bold80pt7b);
-    // tft.setFont(&fonts::DejaVu72);
-    tft.setTextDatum(CC_DATUM);
-    //tft.drawString("TAB-01", 400, 300);
     draw_sprite_sel_tab(1);
 }
 

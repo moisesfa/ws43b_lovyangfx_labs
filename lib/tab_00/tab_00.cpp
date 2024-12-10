@@ -52,13 +52,8 @@ String weather_code_str;
 //String weather_description;
 
 // SET VARIABLE TO 0 FOR TEMPERATURE IN FAHRENHEIT DEGREES
-#define TEMP_CELSIUS 1
-
-#if TEMP_CELSIUS
-  String temperature_unit = "";
-#else
-  String temperature_unit = "&temperature_unit=fahrenheit";
-#endif
+String temperature_unit = "";
+//String temperature_unit = "&temperature_unit=fahrenheit";
 
 void get_sync_time();
 void get_weather_data();

@@ -3,6 +3,7 @@
 #include "tabs_all.h"
 #include "tab_00.h"
 #include "tab_01.h"
+#include "tab_02.h"
 
 #define MODE_WIFI 1
 bool is_wifi_connected = false;
@@ -61,6 +62,9 @@ void taskShowLocalTime(void *pvParameters)
                 if (tab_number == 1) {
                     tab_01_view_date(str_date);
                     tab_01_view_time(str_time);
+                }
+                if (tab_number == 2){
+                    tab_02_view_data_ext(temperature_str, humidity_str);
                 }
             }
         }
