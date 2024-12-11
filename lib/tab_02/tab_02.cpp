@@ -4,7 +4,7 @@
 #include "tabs_all.h"
 
 // Dirección para convrtir fuentes https://rop.nl/truetype2gfx/   
-#include "myfonts/AlibabaSans_Bold80pt7b.h"
+#include "myfonts/AlibabaSans_Bold40pt7b.h"
 #include "myfonts/AlibabaSans_Bold20pt7b.h"
 
 const char* title_02 = "TIEMPO WIFI";
@@ -41,15 +41,19 @@ void tab_02_view_data_ext(String msg_tem, String msg_hum)
     sprite_info_data_ext.fillSprite(TFT_TRANSPARENT);
 
     sprite_info_data_ext.setFont(&AlibabaSans_Bold20pt7b);
-    sprite_info_data_ext.setTextColor(TFT_WHITE);
+    sprite_info_data_ext.setTextColor(TFT_LIGHTGRAY);
     sprite_info_data_ext.setTextDatum(CC_DATUM);
     //sprite_info_data_ext.drawString(msg_tem, WIDTH_SPRT_INFO_DATA_EXT / 2, HEIGHT_SPRT_INFO_DATA_EXT / 2 + 8);
-    sprite_info_data_ext.drawString("TEM:", 60, HEIGHT_SPRT_INFO_DATA_EXT / 2 );
-    sprite_info_data_ext.drawString(msg_tem, 150, HEIGHT_SPRT_INFO_DATA_EXT / 2 );
+    sprite_info_data_ext.drawString("TEM", 50, HEIGHT_SPRT_INFO_DATA_EXT / 2 );
     //sprite_info_data_ext.drawString("C", 230, HEIGHT_SPRT_INFO_DATA_EXT / 2 );
-    sprite_info_data_ext.drawString("HUM:", 450, HEIGHT_SPRT_INFO_DATA_EXT / 2 );
-    sprite_info_data_ext.drawString(msg_hum, 560, HEIGHT_SPRT_INFO_DATA_EXT / 2);
-    sprite_info_data_ext.pushSprite(100, 100);
-    //sprite_info_data_ext.pushSprite(100, 100,TFT_TRANSPARENT);
+    sprite_info_data_ext.drawString("HUM", 650, HEIGHT_SPRT_INFO_DATA_EXT / 2 );
+    sprite_info_data_ext.drawString("o", 260, HEIGHT_SPRT_INFO_DATA_EXT / 3 );
+    sprite_info_data_ext.setFont(&AlibabaSans_Bold40pt7b);
+    sprite_info_data_ext.drawString("%", 550, HEIGHT_SPRT_INFO_DATA_EXT / 2 );
+    sprite_info_data_ext.drawString("C", 300, HEIGHT_SPRT_INFO_DATA_EXT / 2 );
+    sprite_info_data_ext.drawString(msg_tem, 180, HEIGHT_SPRT_INFO_DATA_EXT / 2 );
+    sprite_info_data_ext.drawString(msg_hum, 460, HEIGHT_SPRT_INFO_DATA_EXT / 2);
+    //sprite_info_data_ext.pushSprite(50, 100);
+    sprite_info_data_ext.pushSprite(50, 100,TFT_TRANSPARENT);
 
 }

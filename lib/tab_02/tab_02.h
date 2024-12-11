@@ -1,6 +1,6 @@
 #pragma once 
 
-#define WIDTH_SPRT_INFO_DATA_EXT    600
+#define WIDTH_SPRT_INFO_DATA_EXT    700
 #define HEIGHT_SPRT_INFO_DATA_EXT   100 
 
 void tab_02_view(void); 

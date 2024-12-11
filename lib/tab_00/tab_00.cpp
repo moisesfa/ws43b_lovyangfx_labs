@@ -58,7 +58,7 @@ String temperature_unit = "";
 void get_sync_time();
 void get_weather_data();
 
-void task_WiFi_NTP(void *pvParameters)
+void task_WiFi_update_data(void *pvParameters)
 {
   while (true)
   {
@@ -80,11 +80,18 @@ void task_WiFi_NTP(void *pvParameters)
     {
       // Si ya esta concetado sincronizar periodicamente
       Serial.println("WiFi connected");
-      static unsigned long lastSync = 0;
-      if (millis() - lastSync > 6 * 60 * 60 * 1000)
+      static unsigned long lastSyncTime = 0;
+      static unsigned long lastSyncWeather = 0;
+      if (millis() - lastSyncTime > 6 * 60 * 60 * 1000)
       {             // cada 6 horas
         get_sync_time(); // Sincronizar el tiempo
-        lastSync = millis();
+        lastSyncTime = millis();
+      }
+      //if (millis() - lastSyncWeather > 60 * 60 * 1000)
+      if (millis() - lastSyncWeather > 15 * 60 * 1000)
+      {             // cada 1 horas
+        get_weather_data(); // Sincronizar el tiempo climatico
+        lastSyncWeather = millis();
       }
     }
     // Revisar el estado cada minuto de momento
@@ -343,6 +350,6 @@ bool tab_00_view(void)
   wifi_test();
   get_sync_time();
   get_weather_data();
-  xTaskCreate(task_WiFi_NTP, "taskWiFiNTP", 1024 * 2, NULL, 1, NULL);
+  xTaskCreate(task_WiFi_update_data, "task_WiFi_update_data", 1024 * 3, NULL, 1, NULL);
   return true;
 }
