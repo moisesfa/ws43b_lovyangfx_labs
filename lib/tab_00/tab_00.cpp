@@ -10,6 +10,7 @@
 
 #include <esp_wifi.h>
 #include "myfonts/AlibabaSans_Bold20pt7b.h"
+#include "global.h"
 
 const char *title_00 = "CONEXION";
 
@@ -49,11 +50,11 @@ String humidity_str;
 String is_day_str;
 String weather_code_str;
 
-//String weather_description;
+// String weather_description;
 
 // SET VARIABLE TO 0 FOR TEMPERATURE IN FAHRENHEIT DEGREES
 String temperature_unit = "";
-//String temperature_unit = "&temperature_unit=fahrenheit";
+// String temperature_unit = "&temperature_unit=fahrenheit";
 
 void get_sync_time();
 void get_weather_data();
@@ -62,37 +63,42 @@ void task_WiFi_update_data(void *pvParameters)
 {
   while (true)
   {
-    if (WiFi.status() != WL_CONNECTED)
+    if (xSemaphoreTake(xMutex, portMAX_DELAY))
     {
-      Serial.println("WiFi not connected. Trying to reconnect");
-      WiFi.reconnect();
-      vTaskDelay(100 / portTICK_PERIOD_MS);
-      if (WiFi.status() == WL_CONNECTED)
+      if (WiFi.status() != WL_CONNECTED)
       {
-        get_sync_time(); // Sincronizar el tiempo
+        Serial.println("WiFi not connected. Trying to reconnect");
+        WiFi.reconnect();
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        if (WiFi.status() == WL_CONNECTED)
+        {
+          get_sync_time(); // Sincronizar el tiempo
+        }
+        else
+        {
+          Serial.println("Could not connect to wifi");
+        }
       }
       else
       {
-        Serial.println("Could not connect to wifi");
+        // Si ya esta concetado sincronizar periodicamente
+        Serial.println("WiFi connected");
+        static unsigned long lastSyncTime = 0;
+        static unsigned long lastSyncWeather = 0;
+        //if (millis() - lastSyncTime > 58 * 1000) // Para pruebas
+        if (millis() - lastSyncTime > 6 * 59 * 60 * 1000)
+        {                  // cada 6 horas
+          get_sync_time(); // Sincronizar el tiempo
+          lastSyncTime = millis();
+        }
+        //if (millis() - lastSyncWeather > 2 * 59 * 1000)  // Para pruebas
+        if (millis() - lastSyncWeather > 59 * 60 * 1000)
+        {                     // cada 1 horas
+          get_weather_data(); // Sincronizar el tiempo climatico
+          lastSyncWeather = millis();
+        }
       }
-    }
-    else
-    {
-      // Si ya esta concetado sincronizar periodicamente
-      Serial.println("WiFi connected");
-      static unsigned long lastSyncTime = 0;
-      static unsigned long lastSyncWeather = 0;
-      if (millis() - lastSyncTime > 6 * 60 * 60 * 1000)
-      {             // cada 6 horas
-        get_sync_time(); // Sincronizar el tiempo
-        lastSyncTime = millis();
-      }
-      //if (millis() - lastSyncWeather > 60 * 60 * 1000)
-      if (millis() - lastSyncWeather > 15 * 60 * 1000)
-      {             // cada 1 horas
-        get_weather_data(); // Sincronizar el tiempo climatico
-        lastSyncWeather = millis();
-      }
+      xSemaphoreGive(xMutex);
     }
     // Revisar el estado cada minuto de momento
     vTaskDelay(60 * 1000 / portTICK_PERIOD_MS);
@@ -159,9 +165,9 @@ void wifi_test()
   text += "\n";
   Serial.print((char *)(current_conf.sta.ssid));
 
-  //tft.drawRoundRect(50, 210, 680, 180, 20, TFT_GOLD);
+  // tft.drawRoundRect(50, 210, 680, 180, 20, TFT_GOLD);
   tft.fillRoundRect(100, 260, 600, 180, 20, 0x000028);
-  
+
   tft.drawString("CONECTANDO A " + String((char *)(current_conf.sta.ssid)), 400, 300);
   tft.drawString("..............", 400, 350);
 
@@ -187,7 +193,7 @@ void wifi_test()
       Serial.println(text);
 
       tft.fillRoundRect(50, 260, 680, 180, 20, 0x000028);
-      //tft.drawRoundRect(50, 210, 680, 180, 20, TFT_GOLD);
+      // tft.drawRoundRect(50, 210, 680, 180, 20, TFT_GOLD);
       tft.drawString("NO SE HA PODIDO CONECTAR", 400, 300);
       tft.drawString("ESPERANDO SMARTCONFIG", 400, 350);
       tft.drawString("USE LA APP - ESPTOUCH - PARA CONECTARSE ", 400, 400);
@@ -235,7 +241,7 @@ void get_sync_time()
 {
   configTzTime(TIMEZONE, NTP_SERVER1, NTP_SERVER2);
   Serial.println("Waiting for NTP sync ...");
-  struct tm time_local;
+  // struct tm time_local;
   if (!getLocalTime(&time_local))
   {
     Serial.println("Error unable to sync with NTP");
@@ -246,71 +252,74 @@ void get_sync_time()
   }
 }
 
-void get_weather_data() {
-// Obternr los datos meteorológicos de la API de open-meteo.com
-// Example response
-/* 
-{"latitude":42.5,"longitude":-6.5625,"generationtime_ms":0.062943,"utc_offset_seconds":3600,"timezone":"Europe/Madrid","timezone_abbreviation":"CET","elevation":677,"current_units":{"time":"iso8601","interval":"seconds","temperature_2m":"°C","relative_humidity_2m":"%","is_day":"","precipitation":"mm","rain":"mm","weather_code":"wmo code"},"current":{"time":"2024-12-06T17:00","interval":900,"temperature_2m":14.4,"relative_humidity_2m":78,"is_day":1,"precipitation":0,"rain":0,"weather_code":2}}
-*/
+void get_weather_data()
+{
+  // Obternr los datos meteorológicos de la API de open-meteo.com
+  // Example response
+  /*
+  {"latitude":42.5,"longitude":-6.5625,"generationtime_ms":0.062943,"utc_offset_seconds":3600,"timezone":"Europe/Madrid","timezone_abbreviation":"CET","elevation":677,"current_units":{"time":"iso8601","interval":"seconds","temperature_2m":"°C","relative_humidity_2m":"%","is_day":"","precipitation":"mm","rain":"mm","weather_code":"wmo code"},"current":{"time":"2024-12-06T17:00","interval":900,"temperature_2m":14.4,"relative_humidity_2m":78,"is_day":1,"precipitation":0,"rain":0,"weather_code":2}}
+  */
 
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    // Construct the API endpoint
-    String url = String("http://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + "&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,weather_code" + temperature_unit + "&timezone=" + timezone + "&forecast_days=1");
-    http.begin(url);
-    int httpCode = http.GET(); // Make the GET request
+  HTTPClient http;
+  // Construct the API endpoint
+  String url = String("http://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + "&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,weather_code" + temperature_unit + "&timezone=" + timezone + "&forecast_days=1");
+  http.begin(url);
+  int httpCode = http.GET(); // Make the GET request
 
-    if (httpCode > 0) {
-      // Check for the response
-      if (httpCode == HTTP_CODE_OK) {
-        String payload = http.getString();
-        //Serial.println("Request information:");
-        //Serial.println(payload);
-        // Parse the JSON to extract the time
-        JsonDocument doc;
-        DeserializationError error = deserializeJson(doc, payload);
-        if (!error) {
-          String output;
-          serializeJson(doc, output);
-          Serial.println(output);
+  if (httpCode > 0)
+  {
+    // Check for the response
+    if (httpCode == HTTP_CODE_OK)
+    {
+      String payload = http.getString();
+      // Serial.println("Request information:");
+      // Serial.println(payload);
+      //  Parse the JSON to extract the time
+      JsonDocument doc;
+      DeserializationError error = deserializeJson(doc, payload);
+      if (!error)
+      {
+        String output;
+        serializeJson(doc, output);
+        Serial.println(output);
 
-          const char* datetime = doc["current"]["time"];
-          String temperature = doc["current"]["temperature_2m"];
-          String humidity = doc["current"]["relative_humidity_2m"];
-          String is_day = doc["current"]["is_day"];
-          String weather_code = doc["current"]["weather_code"];
+        const char *datetime = doc["current"]["time"];
+        String temperature = doc["current"]["temperature_2m"];
+        String humidity = doc["current"]["relative_humidity_2m"];
+        String is_day = doc["current"]["is_day"];
+        String weather_code = doc["current"]["weather_code"];
 
-          datetime_str = String(datetime);
-          temperature_str = String(temperature);
-          humidity_str = String(humidity);
-          is_day_str = String(is_day);
-          weather_code_str = String(weather_code);
-          
-          // Split the datetime into date and time
-          int splitIndex = datetime_str.indexOf('T');
-          current_date_str = datetime_str.substring(0, splitIndex);
-          last_weather_update_str = datetime_str.substring(splitIndex + 1, splitIndex + 9); // Extract time portion
-          Serial.print("Get weater :\n");
-          Serial.printf("datetime_str: %s\n", datetime_str.c_str());
-          Serial.printf("current_date_str: %s\n", current_date_str.c_str());
-          Serial.printf("last_weather_update: %s\n", last_weather_update_str.c_str());
-          Serial.printf("temperature_str: %s\n", temperature_str.c_str());
-          Serial.printf("humidity_str: %s\n", humidity_str.c_str());
-          Serial.printf("is_day_str: %s\n", is_day_str.c_str());
-          Serial.printf("weather_code_str: %s\n", weather_code_str.c_str());
+        datetime_str = String(datetime);
+        temperature_str = String(temperature);
+        humidity_str = String(humidity);
+        is_day_str = String(is_day);
+        weather_code_str = String(weather_code);
 
-        } else {
-          Serial.print("deserializeJson() failed: ");
-          Serial.println(error.c_str());
-        }
+        // Split the datetime into date and time
+        int splitIndex = datetime_str.indexOf('T');
+        current_date_str = datetime_str.substring(0, splitIndex);
+        last_weather_update_str = datetime_str.substring(splitIndex + 1, splitIndex + 9); // Extract time portion
+        Serial.print("Get weater :\n");
+        Serial.printf("datetime_str: %s\n", datetime_str.c_str());
+        Serial.printf("current_date_str: %s\n", current_date_str.c_str());
+        Serial.printf("last_weather_update: %s\n", last_weather_update_str.c_str());
+        Serial.printf("temperature_str: %s\n", temperature_str.c_str());
+        Serial.printf("humidity_str: %s\n", humidity_str.c_str());
+        Serial.printf("is_day_str: %s\n", is_day_str.c_str());
+        Serial.printf("weather_code_str: %s\n", weather_code_str.c_str());
       }
-    } else {
-      Serial.printf("GET request failed, error: %s\n", http.errorToString(httpCode).c_str());
+      else
+      {
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
+      }
     }
-    http.end(); // Close connection
-  } else {
-    Serial.println("Not connected to Wi-Fi");
   }
+  else
+  {
+    Serial.printf("GET request failed, error: %s\n", http.errorToString(httpCode).c_str());
+  }
+  http.end(); // Close connection
 }
 
 void network_reset()
@@ -325,16 +334,15 @@ void network_reset()
   esp_wifi_set_config((wifi_interface_t)ESP_IF_WIFI_STA, &current_conf);
 }
 
-
 bool tab_00_view(void)
 {
   tab_number = 0;
 
   // https://youtu.be/U4jOFLFNZBI?feature=shared
   degraded_background();
-  //tft.fillScreen(TFT_PURPLE);
-  
-  //delay(5000);
+  // tft.fillScreen(TFT_PURPLE);
+
+  // delay(5000);
 
   tft.fillRect(0, 0, 800, 70, 0x000028);
   tft.setTextColor(TFT_GOLD);
@@ -344,12 +352,12 @@ bool tab_00_view(void)
   tft.drawString(title_00, 360, 40);
   draw_sprite_symbol_wifi();
   tft.setFont(&fonts::DejaVu40);
-  
+
   Serial.println("Try to connect to wifi");
   // network_reset();
   wifi_test();
   get_sync_time();
   get_weather_data();
-  xTaskCreate(task_WiFi_update_data, "task_WiFi_update_data", 1024 * 3, NULL, 1, NULL);
+  xTaskCreate(task_WiFi_update_data, "task_WiFi_update_data", 1024 * 4, NULL, 1, NULL);
   return true;
 }
