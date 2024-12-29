@@ -276,7 +276,7 @@ void get_weather_data()
       {
         String output;
         serializeJson(doc, output);
-        Serial.println(output);
+        //Serial.println(output);
 
         const char *datetime = doc["current"]["time"];
         String temperature = doc["current"]["temperature_2m"];
@@ -295,14 +295,14 @@ void get_weather_data()
         int splitIndex = str_datetime.indexOf('T');
         current_date_str = str_datetime.substring(0, splitIndex);
         last_weather_update_str = str_datetime.substring(splitIndex + 1, splitIndex + 9); // Extract time portion
-        Serial.print("Get weater :\n");
-        Serial.printf("datetime_str: %s\n", str_datetime.c_str());
-        Serial.printf("current_date_str: %s\n", current_date_str.c_str());
-        Serial.printf("last_weather_update: %s\n", last_weather_update_str.c_str());
-        Serial.printf("temperature_str: %s\n", str_temperature.c_str());
-        Serial.printf("humidity_str: %s\n", str_humidity.c_str());
-        Serial.printf("is_day_str: %s\n", is_day_str.c_str());
-        Serial.printf("weather_code_str: %s\n", weather_code_str.c_str());
+        // Serial.print("Get weater :\n");
+        // Serial.printf("datetime_str: %s\n", str_datetime.c_str());
+        // Serial.printf("current_date_str: %s\n", current_date_str.c_str());
+        // Serial.printf("last_weather_update: %s\n", last_weather_update_str.c_str());
+        // Serial.printf("temperature_str: %s\n", str_temperature.c_str());
+        // Serial.printf("humidity_str: %s\n", str_humidity.c_str());
+        // Serial.printf("is_day_str: %s\n", is_day_str.c_str());
+        // Serial.printf("weather_code_str: %s\n", weather_code_str.c_str());
       }
       else
       {
