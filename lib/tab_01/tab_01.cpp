@@ -59,6 +59,7 @@ void tab_01_view_time(String msg_time)
 void tab_01_view_date(String msg_date)
 {
     sprite_info_date.fillSprite(TFT_TRANSPARENT);
+    sprite_info_date.fillRoundRect(0, 0, 500, 100,20, 0x000028);
 
     sprite_info_date.setFont(&AlibabaSans_Bold40pt7b);
     sprite_info_date.setTextColor(TFT_GOLD);

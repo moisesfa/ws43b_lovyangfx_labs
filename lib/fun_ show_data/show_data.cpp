@@ -35,49 +35,45 @@ void setManualLocalTime(void)
 
 void taskShowLocalTime(void *pvParameters)
 {
-    //struct tm time_local;
+    struct tm time_local;
     String str_time = "00:00:00";
     String str_date = "2024-01-01";
     int8_t lastSecond = -1;
 
     while (true)
     {
-        if (xSemaphoreTake(xMutex, portMAX_DELAY))
+        // Obtener la hora actual
+        if (getLocalTime(&time_local))
         {
-            // Obtener la hora actual
-            if (getLocalTime(&time_local))
+            int currentSecond = time_local.tm_sec;
+
+            // Si cambia el segundo, actualiza la pantalla
+            if (currentSecond != lastSecond)
             {
-                int currentSecond = time_local.tm_sec;
+                lastSecond = currentSecond;
 
-                // Si cambia el segundo, actualiza la pantalla
-                if (currentSecond != lastSecond)
+                // Actualizar pantalla o realizar acción
+                char buffer_time[32];
+                strftime(buffer_time, sizeof(buffer_time), "%Y-%m-%d %H:%M:%S", &time_local);
+                // Serial.println(buffer_time);
+                String str = (char *)buffer_time;
+                str_time = str.substring(11, 19);
+                str_date = str.substring(0, 10);
+                Serial.printf("%s %s\n", str_time, str_date);
+                if (tab_number == 1)
                 {
-                    lastSecond = currentSecond;
-
-                    // Actualizar pantalla o realizar acción
-                    char buffer_time[32];
-                    strftime(buffer_time, sizeof(buffer_time), "%Y-%m-%d %H:%M:%S", &time_local);
-                    // Serial.println(buffer_time);
-                    String str = (char *)buffer_time;
-                    str_time = str.substring(11, 19);
-                    str_date = str.substring(0, 10);
-                    Serial.printf("%s %s\n", str_time, str_date);
-                    if (tab_number == 1)
-                    {
-                        tab_01_view_date(str_date);
-                        tab_01_view_time(str_time);
-                    }
-                    if (tab_number == 2)
-                    {
-                        tab_02_view_data_ext(temperature_str, humidity_str);
-                    }
+                    tab_01_view_date(str_date);
+                    tab_01_view_time(str_time);
+                }
+                if (tab_number == 2 && is_update_weather == false)
+                {
+                    tab_02_view_data_ext(str_temperature, str_humidity);
                 }
             }
-            else
-            {
-                Serial.println("Error: No se pudo obtener la hora.");
-            }
-            xSemaphoreGive(xMutex);
+        }
+        else
+        {
+            Serial.println("Error: No se pudo obtener la hora.");
         }
         vTaskDelay(pdMS_TO_TICKS(200));
     }

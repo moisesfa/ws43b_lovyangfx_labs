@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <LovyanGFX.hpp>
 #include "config_lovyan_gfx.h"
 
@@ -32,6 +33,9 @@ Las Coordenadas de Ponferrada Latitud y Longitud son las siguientes:
 * Longitud: -6.5719487
 */
 
+String current_date_str;
+String last_weather_update_str;
+
 // Replace with the latitude and longitude to where you want to get the weather
 String latitude = "42.5025289";
 String longitude = "-6.5719487";
@@ -40,13 +44,6 @@ String location = "Ponferrada";
 // Type the timezone you want to get the time for
 String timezone = "Europe/Madrid";
 
-// Store date and time
-String datetime_str;
-String current_date_str;
-String last_weather_update_str;
-
-String temperature_str;
-String humidity_str;
 String is_day_str;
 String weather_code_str;
 
@@ -63,8 +60,6 @@ void task_WiFi_update_data(void *pvParameters)
 {
   while (true)
   {
-    if (xSemaphoreTake(xMutex, portMAX_DELAY))
-    {
       if (WiFi.status() != WL_CONNECTED)
       {
         Serial.println("WiFi not connected. Trying to reconnect");
@@ -98,8 +93,7 @@ void task_WiFi_update_data(void *pvParameters)
           lastSyncWeather = millis();
         }
       }
-      xSemaphoreGive(xMutex);
-    }
+    
     // Revisar el estado cada minuto de momento
     vTaskDelay(60 * 1000 / portTICK_PERIOD_MS);
   }
@@ -241,7 +235,7 @@ void get_sync_time()
 {
   configTzTime(TIMEZONE, NTP_SERVER1, NTP_SERVER2);
   Serial.println("Waiting for NTP sync ...");
-  // struct tm time_local;
+  struct tm time_local;
   if (!getLocalTime(&time_local))
   {
     Serial.println("Error unable to sync with NTP");
@@ -265,6 +259,7 @@ void get_weather_data()
   String url = String("http://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + "&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,weather_code" + temperature_unit + "&timezone=" + timezone + "&forecast_days=1");
   http.begin(url);
   int httpCode = http.GET(); // Make the GET request
+  is_update_weather = true;
 
   if (httpCode > 0)
   {
@@ -289,22 +284,23 @@ void get_weather_data()
         String is_day = doc["current"]["is_day"];
         String weather_code = doc["current"]["weather_code"];
 
-        datetime_str = String(datetime);
-        temperature_str = String(temperature);
-        humidity_str = String(humidity);
-        is_day_str = String(is_day);
-        weather_code_str = String(weather_code);
+        str_temperature = temperature;
+        str_humidity = humidity;        
+
+        str_datetime = datetime;
+        is_day_str = is_day;
+        weather_code_str = weather_code;
 
         // Split the datetime into date and time
-        int splitIndex = datetime_str.indexOf('T');
-        current_date_str = datetime_str.substring(0, splitIndex);
-        last_weather_update_str = datetime_str.substring(splitIndex + 1, splitIndex + 9); // Extract time portion
+        int splitIndex = str_datetime.indexOf('T');
+        current_date_str = str_datetime.substring(0, splitIndex);
+        last_weather_update_str = str_datetime.substring(splitIndex + 1, splitIndex + 9); // Extract time portion
         Serial.print("Get weater :\n");
-        Serial.printf("datetime_str: %s\n", datetime_str.c_str());
+        Serial.printf("datetime_str: %s\n", str_datetime.c_str());
         Serial.printf("current_date_str: %s\n", current_date_str.c_str());
         Serial.printf("last_weather_update: %s\n", last_weather_update_str.c_str());
-        Serial.printf("temperature_str: %s\n", temperature_str.c_str());
-        Serial.printf("humidity_str: %s\n", humidity_str.c_str());
+        Serial.printf("temperature_str: %s\n", str_temperature.c_str());
+        Serial.printf("humidity_str: %s\n", str_humidity.c_str());
         Serial.printf("is_day_str: %s\n", is_day_str.c_str());
         Serial.printf("weather_code_str: %s\n", weather_code_str.c_str());
       }
@@ -320,6 +316,7 @@ void get_weather_data()
     Serial.printf("GET request failed, error: %s\n", http.errorToString(httpCode).c_str());
   }
   http.end(); // Close connection
+  is_update_weather = false;
 }
 
 void network_reset()
@@ -358,6 +355,6 @@ bool tab_00_view(void)
   wifi_test();
   get_sync_time();
   get_weather_data();
-  xTaskCreate(task_WiFi_update_data, "task_WiFi_update_data", 1024 * 4, NULL, 1, NULL);
+  xTaskCreate(task_WiFi_update_data, "task_WiFi_update_data", 1024 * 3, NULL, 1, NULL);
   return true;
 }
