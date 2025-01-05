@@ -54,8 +54,8 @@ void tab_02_view_data_ext(String msg_tem, String msg_hum)
     //sprite_info_data_ext.drawString("o", 260, HEIGHT_SPRT_INFO_DATA_EXT / 3 );
     sprite_info_data_ext.setFont(&AlibabaSans_Bold80pt7b);
     //sprite_info_data_ext.drawString("C", 300, HEIGHT_SPRT_INFO_DATA_EXT / 2 );
-    sprite_info_data_ext.fillRoundRect(10, 159, 340, 150, 20, 0x000028);
-    sprite_info_data_ext.fillRoundRect(360, 159, 340, 150, 20, 0x000028);
+    sprite_info_data_ext.fillRoundRect(0, 158, 700, 150, 20, 0x000028);
+    //sprite_info_data_ext.fillRoundRect(360, 159, 340, 150, 20, 0x000028);
     
     sprite_info_data_ext.drawString(msg_tem, 175, 240 );
     sprite_info_data_ext.drawString(msg_hum, 525, 240);

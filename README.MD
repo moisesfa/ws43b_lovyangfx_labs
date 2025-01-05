@@ -22,9 +22,9 @@ Casi toda la información la encuentro en este gran canal [Volos Projects](https
 ## Tab_02 Estación Meteorológica
 Añadiré datos meteorológicos siguiendo este tutorial de [Randomnerd](https://randomnerdtutorials.com/esp32-cyd-lvgl-weather-station/)
 
-- [ ] Obtener la previsión meteorológica 
-- [ ] Mostrar los datos obtenidos en Tab_02 
-- [ ] Sincronizar la previsión periodicamente 
+- [x] Obtener la previsión meteorológica 
+- [x] Mostrar los datos obtenidos en Tab_02 
+- [x] Sincronizar la previsión periodicamente 
 
 ## Resultado Reloj WiFi y Conexión
 
@@ -37,3 +37,9 @@ Añadiré datos meteorológicos siguiendo este tutorial de [Randomnerd](https://
 |---------------------------------|---------------------------------|---------------------------------|
 
 </div>
+
+## Resultado Final
+<div style="text-align: center;">
+
+| ![Imagen 1](docs/img/result_4.jpg) | ![Imagen 2](docs/img/result_5.jpg) | 
+|---------------------------------|---------------------------------|
