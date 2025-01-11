@@ -60,40 +60,40 @@ void task_WiFi_update_data(void *pvParameters)
 {
   while (true)
   {
-      if (WiFi.status() != WL_CONNECTED)
+    if (WiFi.status() != WL_CONNECTED)
+    {
+      Serial.println("WiFi not connected. Trying to reconnect");
+      WiFi.reconnect();
+      vTaskDelay(100 / portTICK_PERIOD_MS);
+      if (WiFi.status() == WL_CONNECTED)
       {
-        Serial.println("WiFi not connected. Trying to reconnect");
-        WiFi.reconnect();
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-        if (WiFi.status() == WL_CONNECTED)
-        {
-          get_sync_time(); // Sincronizar el tiempo
-        }
-        else
-        {
-          Serial.println("Could not connect to wifi");
-        }
+        get_sync_time(); // Sincronizar el tiempo
       }
       else
       {
-        // Si ya esta concetado sincronizar periodicamente
-        Serial.println("WiFi connected");
-        static unsigned long lastSyncTime = 0;
-        static unsigned long lastSyncWeather = 0;
-        //if (millis() - lastSyncTime > 58 * 1000) // Para pruebas
-        if (millis() - lastSyncTime > 6 * 59 * 60 * 1000)
-        {                  // cada 6 horas
-          get_sync_time(); // Sincronizar el tiempo
-          lastSyncTime = millis();
-        }
-        //if (millis() - lastSyncWeather > 2 * 59 * 1000)  // Para pruebas
-        if (millis() - lastSyncWeather > 59 * 60 * 1000)
-        {                     // cada 1 horas
-          get_weather_data(); // Sincronizar el tiempo climatico
-          lastSyncWeather = millis();
-        }
+        Serial.println("Could not connect to wifi");
       }
-    
+    }
+    else
+    {
+      // Si ya esta concetado sincronizar periodicamente
+      Serial.println("WiFi connected");
+      static unsigned long lastSyncTime = 0;
+      static unsigned long lastSyncWeather = 0;
+      // if (millis() - lastSyncTime > 58 * 1000) // Para pruebas
+      if (millis() - lastSyncTime > 6 * 59 * 60 * 1000)
+      {                  // cada 6 horas
+        get_sync_time(); // Sincronizar el tiempo
+        lastSyncTime = millis();
+      }
+      // if (millis() - lastSyncWeather > 2 * 59 * 1000)  // Para pruebas
+      if (millis() - lastSyncWeather > 59 * 60 * 1000)
+      {                     // cada 1 horas
+        get_weather_data(); // Sincronizar el tiempo climatico
+        lastSyncWeather = millis();
+      }
+    }
+
     // Revisar el estado cada minuto de momento
     vTaskDelay(60 * 1000 / portTICK_PERIOD_MS);
   }
@@ -276,7 +276,7 @@ void get_weather_data()
       {
         String output;
         serializeJson(doc, output);
-        //Serial.println(output);
+        // Serial.println(output);
 
         const char *datetime = doc["current"]["time"];
         String temperature = doc["current"]["temperature_2m"];
@@ -284,8 +284,13 @@ void get_weather_data()
         String is_day = doc["current"]["is_day"];
         String weather_code = doc["current"]["weather_code"];
 
-        str_temperature = temperature;
-        str_humidity = humidity;        
+        if (xSemaphoreTake(xMutex, portMAX_DELAY))
+        {
+          // Actualización de las variables limitando el tamaño 
+          str_temperature = temperature.substring(0,4);
+          str_humidity = humidity.substring(0,2);
+          xSemaphoreGive(xMutex);
+        }
 
         str_datetime = datetime;
         is_day_str = is_day;
@@ -338,7 +343,6 @@ bool tab_00_view(void)
   // https://youtu.be/U4jOFLFNZBI?feature=shared
   degraded_background();
   // tft.fillScreen(TFT_PURPLE);
-
   // delay(5000);
 
   tft.fillRect(0, 0, 800, 70, 0x000028);

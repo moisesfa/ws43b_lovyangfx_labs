@@ -59,7 +59,7 @@ void taskShowLocalTime(void *pvParameters)
                 String str = (char *)buffer_time;
                 str_time = str.substring(11, 19);
                 str_date = str.substring(0, 10);
-                //Serial.printf("%s %s\n", str_time, str_date);
+                // Serial.printf("%s %s\n", str_time, str_date);
                 if (tab_number == 1)
                 {
                     tab_01_view_date(str_date);
@@ -67,7 +67,15 @@ void taskShowLocalTime(void *pvParameters)
                 }
                 if (tab_number == 2 && is_update_weather == false)
                 {
-                    tab_02_view_data_ext(str_temperature, str_humidity);
+                    String localCopyTem;
+                    String localCopyHum;
+                    if (xSemaphoreTake(xMutex, portMAX_DELAY))
+                    {
+                        localCopyTem = str_temperature; // Hacer una copia segura
+                        localCopyHum = str_humidity;    // Hacer una copia segura
+                        xSemaphoreGive(xMutex);
+                    }
+                    tab_02_view_data_ext(localCopyTem, localCopyHum);
                 }
             }
         }
@@ -81,6 +89,8 @@ void taskShowLocalTime(void *pvParameters)
 
 void init_clock_wifi(void)
 {
+
+    init_mutex();
 
 #if MODE_WIFI
 

@@ -12,3 +12,6 @@ extern String str_datetime;
 extern String str_temperature;
 extern String str_humidity;
 extern bool is_update_weather;
+extern SemaphoreHandle_t xMutex;
+
+void init_mutex(void);
